@@ -1,0 +1,23 @@
+<html>
+<head>
+  <title>Twitch Extension - Calendar</title>
+  <style type="text/css"></style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.min.js"></script>
+
+  <script type="text/javascript">
+    var module = angular.module('calendar', ['ngAnimate']);
+    module.controller('MainCtrl', function($http) {
+      const $ctrl = this;
+
+      $http.get('https://calendar.google.com/calendar/ical/vqgc7vs42o478h4nvecn0l30pg%40group.calendar.google.com/public/basic.ics')
+.then()
+
+      $ctrl.calendar = "cool calendar"
+    });
+  </script>
+</head>
+<body ng-app="calendar" ng-controller="MainCtrl as $ctrl">
+  {{$ctrl.calendar}}
+</body>
+</html>
