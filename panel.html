@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Twitch Extension - Calendar</title>
+    <link rel="stylesheet" type="text/css" href="style/view.css">
+    <link rel="stylesheet" type="text/css" href="style/day-schedule.css">
+
+    <!-- Dependencies -->
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+
+    <!-- Components -->
+    <script type="text/javascript" src="js/calendar.module.js"></script>
+    <script type="text/javascript" src="js/view.controller.js"></script>
+    <script type="text/javascript" src="js/day-schedule.directive.js"></script>
+</head>
+<body>
+<div ng-app="calendar" ng-controller="ViewCtrl as $ctrl" class="app">
+    <div ng-if="!$ctrl.error">
+        <div class="calendar-summary">
+            <h3>{{$ctrl.calendar.summary}}</h3>
+            <span>{{$ctrl.calendar.description}}</span>
+        </div>
+
+        <day-schedule ng-repeat="events in $ctrl.schedule" schedule="events"></day-schedule>
+
+        <div ng-if="!$ctrl.schedule || !$ctrl.schedule.length" class="no-events">
+            <i>No events</i>
+        </div>
+    </div>
+
+    <div ng-if="$ctrl.error">
+        <h3>{{$ctrl.error}}</h3>
+    </div>
+
+</div>
+</body>
+</html>

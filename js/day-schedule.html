@@ -1,0 +1,16 @@
+<div class="day-indicator">
+    <span>{{$ctrl.schedule.date | date:'d'}}</span>
+    <span>{{$ctrl.schedule.date | date:'EEE'}}</span>
+</div>
+
+<div class="event-container">
+    <div ng-repeat="event in $ctrl.schedule.events"
+         class="event"
+         title="{{event.description}}"
+         ng-class="::{'live':$ctrl.isLive(event), 'expired':$ctrl.isExpired(event)}">
+        <b>{{event.summary}}</b>
+        <br>
+        <i>{{event.start.dateTime | date:'shortTime'}}</i> - <i>{{event.end.dateTime |
+        date:'shortTime'}}</i>
+    </div>
+</div>

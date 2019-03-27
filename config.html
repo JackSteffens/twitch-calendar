@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Twitch Extension - Calendar</title>
+    <link rel="stylesheet" type="text/css" href="style/config.css">
+    <link rel="stylesheet" type="text/css" href="style/day-schedule.css">
+
+    <!-- Dependencies -->
+    <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
+    <script type="text/javascript" src="angular.min.js"></script>
+
+    <script type="text/javascript" src="js/calendar.module.js"></script>
+    <script type="text/javascript" src="js/config.controller.js"></script>
+    <script type="text/javascript" src="js/day-schedule.directive.js"></script>
+</head>
+<body>
+<div ng-app="calendar" ng-controller="ConfigCtrl as $ctrl">
+    <div class="dummy-calendar">
+        <div class="calendar-summary">
+            <h3>Calendar title goes here</h3>
+            <span>and its description</span>
+        </div>
+
+        <day-schedule ng-repeat="events in $ctrl.schedule" schedule="events"></day-schedule>
+    </div>
+    there's no config available yet
+
+    <a href="https://console.developers.google.com">https://console.developers.google.com</a>
+</div>
+</body>
+</html>
