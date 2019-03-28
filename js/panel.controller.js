@@ -23,29 +23,23 @@ angular.module('hypnoised.calendar').controller('PanelCtrl', function ($http, Ca
     }
 
     $ctrl.$onInit = () => {
-        // CalendarService.getConfig does not work in testing environment for some reason !!!!!
-        CalendarService.getConfig()
-                       .then(function (config) {
-                           CALENDAR_ID = config[Segments.BROADCASTER].calendarId;
-                           API_KEY = config[Segments.BROADCASTER].apiKey;
-                           fetchCalendar();
-                       }, function (response) {
-                           if (response.status === 404) {
-                               $ctrl.error = 'The configured calendar could not be found. Please inform the streamer.';
-                           } else if (response.status === 400) {
-                               $ctrl.error = 'The configured Google Calendar API Key is invalid. Please inform the streamer.';
-                           } else if (response.status === 403) {
-                               $ctrl.error = 'Access to some resource was forbidden';
-                           } else {
-                               $ctrl.error = `Something went wrong, but we are not sure about what. Included error message : [${response.data ? response.data.message : 'no message'}]`;
-                           }
-                       })
-                       .finally(() => {
-                           // console.warn('LOADING DUMMY CALENDAR DATA AND WIPING ERRORS');
-                           // $ctrl.error = undefined;
-                           // CALENDAR_ID = 'vqgc7vs42o478h4nvecn0l30pg@group.calendar.google.com';
-                           // API_KEY = 'AIzaSyA2OjZyfInigiK0K71GKaUzatKHJ4U8VlA';
-                           // fetchCalendar();
-                       });
+        window.Twitch.ext.configuration.onChanged(function () {
+            CalendarService.getConfig()
+                           .then(function (config) {
+                               CALENDAR_ID = config[Segments.BROADCASTER] ? config[Segments.BROADCASTER].calendarId : undefined;
+                               API_KEY = config[Segments.BROADCASTER] ? config[Segments.BROADCASTER].apiKey : undefined;
+                               fetchCalendar();
+                           }, function (response) {
+                               if (response.status === 404) {
+                                   $ctrl.error = 'The configured calendar could not be found. Please inform the streamer.';
+                               } else if (response.status === 400) {
+                                   $ctrl.error = 'The configured Google Calendar API Key is invalid. Please inform the streamer.';
+                               } else if (response.status === 403) {
+                                   $ctrl.error = 'Access to some resource was forbidden';
+                               } else {
+                                   $ctrl.error = `Something went wrong, but we are not sure about what. Included error message : [${response.data ? response.data.message : 'no message'}]`;
+                               }
+                           });
+        });
     };
 });

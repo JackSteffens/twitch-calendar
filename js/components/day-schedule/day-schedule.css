@@ -10,20 +10,30 @@ day-schedule > div.day-indicator {
     flex-direction: column;
     width: 50px;
     text-align: center;
+    color: #424242;
+}
+
+day-schedule > div.day-indicator > span.day-of-month {
+    font-size: larger;
+}
+
+day-schedule > div.day-indicator > span.day-of-week {
+    font-size: smaller;
 }
 
 day-schedule > div.event-container {
     width: 100%;
 }
 
-day-schedule:not(:last-of-type) > div.event-container {
+day-schedule:not(:last-of-type) {
     margin-bottom: .75em;
+    /*border-bottom: 1px solid #BDBDBD;*/
 }
 
 day-schedule > div.event-container > div.event {
     padding: .5em 1em;
     color: white;
-    background-color: #FFC107;
+    background-color: #9575CD;
     border-radius: 5px;
     width: 100%;
     box-sizing: border-box;
@@ -36,8 +46,12 @@ day-schedule > div.event-container > div.event > i {
 
 day-schedule > div.event-container > div.event.live {
     background-color: #F44336;
+    box-shadow: 0 0 10px 0 rgb(244, 67, 54);
+    color: white;
 }
 
 day-schedule > div.event-container > div.event.expired {
-    background-color: #BDBDBD;
+    background-color: white;
+    border: 1px solid #B39DDB;
+    color: #B39DDB;
 }

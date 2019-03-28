@@ -68,12 +68,19 @@ angular.module('hypnoised.calendar').controller('ConfigCtrl', function ($http, C
             description: 'and its description',
             items: generateEvents()
         };
-        CalendarService.getConfig()
-                       .then(function (config) {
-                           $ctrl.config = config;
-                           $ctrl.authObj = CalendarService.getAuth();
-                       }, function (error) {
-                           console.error(error);
-                       });
+
+        window.Twitch.ext.configuration.onChanged(() => {
+            CalendarService.getConfig()
+                           .then(function (config) {
+                               $ctrl.config = config;
+                               $ctrl.authObj = CalendarService.getAuth();
+                           }, function (error) {
+                               console.error(error);
+                           })
+                           .finally(() => {
+                               console.log('ConfigCtrl, getConfig() finished');
+                           });
+        });
+
     };
 });
