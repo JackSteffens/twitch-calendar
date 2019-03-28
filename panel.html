@@ -2,37 +2,34 @@
 <html lang="en">
 <head>
     <title>Twitch Extension - Calendar</title>
-    <link rel="stylesheet" type="text/css" href="style/view.css">
-    <link rel="stylesheet" type="text/css" href="style/day-schedule.css">
+    <link rel="stylesheet" type="text/css" href="styles/global.css">
+    <link rel="stylesheet" type="text/css" href="styles/panel.css">
+    <link rel="stylesheet" type="text/css" href="js/components/day-schedule/day-schedule.css">
+    <link rel="stylesheet" type="text/css" href="js/components/calendar/calendar.css">
 
     <!-- Dependencies -->
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script type="text/javascript" src="angular.min.js"></script>
 
-    <!-- Components -->
+    <!-- Main AngularJS App Module -->
     <script type="text/javascript" src="js/calendar.module.js"></script>
-    <script type="text/javascript" src="js/view.controller.js"></script>
-    <script type="text/javascript" src="js/day-schedule.directive.js"></script>
+    <script type="text/javascript" src="js/panel.controller.js"></script>
+
+    <!-- components -->
+    <script type="text/javascript" src="js/components/day-schedule/day-schedule.directive.js"></script>
+    <script type="text/javascript" src="js/components/calendar/calendar.directive.js"></script>
+    <script type="text/javascript" src="js/components/calendar/calendar.controller.js"></script>
+    <script type="text/javascript" src="js/services/calendar.service.js"></script>
+    <script type="text/javascript" src="js/constants/segments.constant.js"></script>
 </head>
 <body>
-<div ng-app="calendar" ng-controller="ViewCtrl as $ctrl" class="app">
+<div ng-app="hypnoised.calendar" ng-controller="PanelCtrl as $ctrl" class="app">
     <div ng-if="!$ctrl.error">
-        <div class="calendar-summary">
-            <h3>{{$ctrl.calendar.summary}}</h3>
-            <span>{{$ctrl.calendar.description}}</span>
-        </div>
-
-        <day-schedule ng-repeat="events in $ctrl.schedule" schedule="events"></day-schedule>
-
-        <div ng-if="!$ctrl.schedule || !$ctrl.schedule.length" class="no-events">
-            <i>No events</i>
-        </div>
+        <calendar g-calendar="$ctrl.calendar"></calendar>
     </div>
-
     <div ng-if="$ctrl.error">
         <h3>{{$ctrl.error}}</h3>
     </div>
-
 </div>
 </body>
 </html>

@@ -3,30 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <title>Twitch Extension - Calendar</title>
-    <link rel="stylesheet" type="text/css" href="style/config.css">
-    <link rel="stylesheet" type="text/css" href="style/day-schedule.css">
-
     <!-- Dependencies -->
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script type="text/javascript" src="angular.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="styles/global.css">
+    <link rel="stylesheet" type="text/css" href="styles/config.css">
+    <link rel="stylesheet" type="text/css" href="js/components/calendar/calendar.css">
+    <link rel="stylesheet" type="text/css" href="js/components/day-schedule/day-schedule.css">
+
+    <!-- Main -->
     <script type="text/javascript" src="js/calendar.module.js"></script>
     <script type="text/javascript" src="js/config.controller.js"></script>
-    <script type="text/javascript" src="js/day-schedule.directive.js"></script>
+
+    <!-- components -->
+    <script type="text/javascript" src="js/components/day-schedule/day-schedule.directive.js"></script>
+    <script type="text/javascript" src="js/components/calendar/calendar.directive.js"></script>
+    <script type="text/javascript" src="js/components/calendar/calendar.controller.js"></script>
+    <script type="text/javascript" src="js/services/calendar.service.js"></script>
+    <script type="text/javascript" src="js/constants/segments.constant.js"></script>
 </head>
 <body>
-<div ng-app="calendar" ng-controller="ConfigCtrl as $ctrl">
+<div ng-app="hypnoised.calendar" ng-controller="ConfigCtrl as $ctrl" class="config">
     <div class="dummy-calendar">
-        <div class="calendar-summary">
-            <h3>Calendar title goes here</h3>
-            <span>and its description</span>
-        </div>
-
-        <day-schedule ng-repeat="events in $ctrl.schedule" schedule="events"></day-schedule>
+        <calendar g-calendar="$ctrl.calendar"></calendar>
     </div>
-    there's no config available yet
 
-    <a href="https://console.developers.google.com">https://console.developers.google.com</a>
+    <div ng-show="$ctrl.authObj">
+        <span>
+            Get a key from <mark>https://console.developers.google.com</mark>
+        </span><br>
+        <label>
+            Google API key
+            <input type="text"
+                   ng-model="$ctrl.config.broadcaster.apiKey"
+                   placeholder="AIzaSyA2OjZyfInigiK0K71GKaUzatKHJ4U8VlA">
+        </label>
+        <br>
+        <span>Create a calendar <mark>https://calendar.google.com/calendar/r/settings/createcalendar</mark>
+            or use an existing one. Make it publicly available.</span><br>
+        <label>
+            Google Calendar ID
+            <input type="text"
+                   ng-model="$ctrl.config.broadcaster.calendarId"
+                   placeholder="vqgc7vs42o478h4nvecn0l30pg@group.calendar.google.com">
+        </label>
+
+        <button ng-click="$ctrl.saveBroadcasterConfig()">save</button>
+    </div>
+
+    <br>
+
+    <div ng-show="$ctrl.authObj">
+        <label>
+            Header color
+            <input type="text"
+                   placeholder="#ffffff">
+        </label><br>
+        <label>
+            Expired event color
+            <input type="text"
+                   placeholder="#ffffff">
+        </label><br>
+        <label>
+            Live event color
+            <input type="text"
+                   placeholder="#ffffff">
+        </label><br>
+        <label>
+            Upcoming event color
+            <input type="text"
+                   placeholder="#ffffff">
+        </label>
+    </div>
+
+    <div ng-show="!$ctrl.authObj">Loading config</div>
 </div>
 </body>
 </html>

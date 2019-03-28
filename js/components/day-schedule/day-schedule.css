@@ -14,6 +14,9 @@ day-schedule > div.day-indicator {
 
 day-schedule > div.event-container {
     width: 100%;
+}
+
+day-schedule:not(:last-of-type) > div.event-container {
     margin-bottom: .75em;
 }
 

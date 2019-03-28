@@ -1,1 +1,1 @@
-angular.module('calendar', []);
+angular.module('hypnoised.calendar', []);

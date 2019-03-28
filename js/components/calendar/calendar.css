@@ -1,0 +1,11 @@
+calendar > div.calendar-summary {
+    background-color: #6441A4;
+    border-radius: 5px;
+    padding: .5em 1em;
+    color: white;
+    margin-bottom: .5em;
+}
+
+calendar > div.calendar-summary > h3 {
+    margin: 0;
+}
