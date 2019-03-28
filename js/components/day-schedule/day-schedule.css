@@ -9,6 +9,7 @@ day-schedule {
 day-schedule > div.day-wrapper {
     display: flex;
     flex-direction: row;
+    width: 100%;
 }
 
 day-schedule > div.week-indicator {
