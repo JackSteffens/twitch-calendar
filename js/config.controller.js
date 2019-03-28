@@ -6,14 +6,13 @@ angular.module('hypnoised.calendar').controller('ConfigCtrl', function ($http, C
     $ctrl.dateNow = new Date();
     $ctrl.calendar = undefined;
     $ctrl.authObj = undefined;
+    $ctrl.calendarIdPattern = new RegExp(/(.+)(\@group\.calendar\.google\.com$)/);
     $ctrl.config = {
         developer: {},
         global: {},
         broadcaster: {}
     };
-    $ctrl.saveDeveloperConfig = saveDeveloperConfig;
     $ctrl.saveBroadcasterConfig = saveBroadcasterConfig;
-    $ctrl.saveGlobalConfig = saveGlobalConfig;
 
     function generateScheduleStartDate() {
         let d = new Date();
@@ -49,16 +48,31 @@ angular.module('hypnoised.calendar').controller('ConfigCtrl', function ($http, C
         return events;
     }
 
-    function saveDeveloperConfig() {
-        CalendarService.saveDeveloperConfig($ctrl.config[Segments.DEVELOPER]);
-    }
-
     function saveBroadcasterConfig() {
-        CalendarService.saveBroadcasterConfig($ctrl.config[Segments.BROADCASTER]);
-    }
-
-    function saveGlobalConfig() {
-        CalendarService.saveGlobalConfig($ctrl.config[Segments.GLOBAL]);
+        $ctrl.error = undefined;
+        let calendarId = $ctrl.config[Segments.BROADCASTER].calendarId;
+        let apiKey = $ctrl.config[Segments.BROADCASTER].apiKey;
+        CalendarService.fetchCalendar(calendarId, apiKey)
+                       .then((response) => {
+                           $ctrl.calendar = response.data;
+                           return CalendarService.saveBroadcasterConfig($ctrl.config[Segments.BROADCASTER]);
+                       }, function (response) {
+                           if (response.status === 404) {
+                               $ctrl.error = 'The configured calendar could not be found. Please inform the streamer.';
+                           } else if (response.status === 400) {
+                               $ctrl.error = 'The configured Google Calendar API Key is invalid. Please inform the streamer.';
+                           } else {
+                               $ctrl.error = 'Something went wrong :: ' + JSON.stringify(response);
+                           }
+                           console.log($ctrl.error);
+                           return Promise.reject(response); // break promise chain
+                       })
+                       .then(() => {
+                           $ctrl.form.$setPristine();
+                           console.log('Successfully tested and saved the Calendar ID & Api Key');
+                       }, (reason) => {
+                           console.error(reason);
+                       });
     }
 
 

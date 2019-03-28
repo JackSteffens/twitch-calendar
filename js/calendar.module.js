@@ -1,1 +1,1 @@
-angular.module('hypnoised.calendar', []);
+angular.module('hypnoised.calendar', ['ngMessages']);

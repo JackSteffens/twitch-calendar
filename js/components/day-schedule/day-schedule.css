@@ -1,36 +1,65 @@
 day-schedule {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 100%;
 }
 
-day-schedule > div.day-indicator {
+day-schedule > div.day-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+day-schedule > div.week-indicator {
+    box-sizing: border-box;
+    color: #424242;
+    font-size: x-small;
+    padding: .5em 1em;
+    width: 100%;
+}
+
+day-schedule:not(:first-of-type) > div.week-indicator {
+    border-top: 1px solid #E0E0E0;
+}
+
+day-schedule > div.day-wrapper > div.day-indicator {
     font-weight: bold;
     display: flex;
     flex-direction: column;
-    width: 50px;
+    justify-content: center;
+    margin: 0 5px;
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
     text-align: center;
     color: #424242;
+    /*border-radius: 50%;*/
+    box-sizing: border-box;
 }
 
-day-schedule > div.day-indicator > span.day-of-month {
+day-schedule > div.day-wrapper > div.day-indicator.today {
+    border-left: 5px solid #9575CD;
+}
+
+day-schedule > div.day-wrapper > div.day-indicator > span.day-of-month {
     font-size: larger;
 }
 
-day-schedule > div.day-indicator > span.day-of-week {
+day-schedule > div.day-wrapper > div.day-indicator > span.day-of-week {
     font-size: smaller;
+    font-weight: lighter;
 }
 
-day-schedule > div.event-container {
+day-schedule > div.day-wrapper > div.event-container {
     width: 100%;
 }
 
-day-schedule:not(:last-of-type) {
-    margin-bottom: .75em;
-    /*border-bottom: 1px solid #BDBDBD;*/
+day-schedule:not(:first-of-type) {
+    margin-top: .5em;
 }
 
-day-schedule > div.event-container > div.event {
+day-schedule > div.day-wrapper > div.event-container > div.event {
     padding: .5em 1em;
     color: white;
     background-color: #9575CD;
@@ -40,18 +69,17 @@ day-schedule > div.event-container > div.event {
     margin-bottom: .5em;
 }
 
-day-schedule > div.event-container > div.event > i {
+day-schedule > div.day-wrapper > div.event-container > div.event > i {
     font-size: small;
 }
 
-day-schedule > div.event-container > div.event.live {
+day-schedule > div.day-wrapper > div.event-container > div.event.live {
     background-color: #F44336;
-    box-shadow: 0 0 10px 0 rgb(244, 67, 54);
     color: white;
 }
 
-day-schedule > div.event-container > div.event.expired {
-    background-color: white;
+day-schedule > div.day-wrapper > div.event-container > div.event.expired {
+    background-color: #FAFAFA;
     border: 1px solid #B39DDB;
     color: #B39DDB;
 }

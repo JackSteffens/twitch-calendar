@@ -3,7 +3,6 @@ calendar > div.calendar-summary {
     border-radius: 5px;
     padding: .5em 1em;
     color: white;
-    margin-bottom: .5em;
 }
 
 calendar > div.calendar-summary > h3 {

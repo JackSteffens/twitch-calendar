@@ -25,6 +25,7 @@ angular.module('hypnoised.calendar')
            $service.saveDeveloperConfig = saveDeveloperConfig;
            $service.saveGlobalConfig = saveGlobalConfig;
            $service.saveBroadcasterConfig = saveBroadcasterConfig;
+           $service.fetchCalendar = fetchCalendar;
 
            function fetchConfig() {
                if (!$service.config && _isAuthenticated) {
@@ -51,23 +52,35 @@ angular.module('hypnoised.calendar')
            }
 
            function saveDeveloperConfig(data) {
-               saveConfig(Segments.DEVELOPER, data);
+               return saveConfig(Segments.DEVELOPER, data);
            }
 
            function saveBroadcasterConfig(data) {
-               saveConfig(Segments.BROADCASTER, data);
+               return saveConfig(Segments.BROADCASTER, data);
            }
 
            function saveGlobalConfig(data) {
-               saveConfig(Segments.GLOBAL, data);
+               return saveConfig(Segments.GLOBAL, data);
            }
 
            function saveConfig(segment, data) {
-               window.Twitch.ext.configuration.set(segment, EXTENSION_VERSION, JSON.stringify(data));
+               return $q((resolve) => {
+                   window.Twitch.ext.configuration.set(segment, EXTENSION_VERSION, JSON.stringify(data));
+                   $timeout(resolve, 1000);
+               });
            }
 
            function getAuth() {
                return $service.authObj;
+           }
+
+           /**
+            * @param {string} calendarId
+            * @param {string} apiKey
+            * @return {Promise}
+            */
+           function fetchCalendar(calendarId, apiKey) {
+               return $http.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`);
            }
 
            /**

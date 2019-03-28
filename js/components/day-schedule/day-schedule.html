@@ -1,16 +1,22 @@
-<div class="day-indicator">
-    <span class="day-of-month">{{$ctrl.schedule.date | date:'d'}}</span>
-    <span class="day-of-week">{{$ctrl.schedule.date | date:'EEE'}}</span>
+<div class="week-indicator" ng-show="$ctrl.schedule.startOfNewWeek">
+    Week {{::$ctrl.schedule.week}}, {{$ctrl.schedule.date | date:'LLLL'}}
 </div>
 
-<div class="event-container">
-    <div ng-repeat="event in $ctrl.schedule.events"
-         class="event"
-         title="{{event.description}}"
-         ng-class="::{'live':$ctrl.isLive(event), 'expired':$ctrl.isExpired(event)}">
-        <b>{{event.summary}}</b>
-        <br>
-        <i>{{event.start.dateTime | date:'shortTime'}}</i> - <i>{{event.end.dateTime |
-        date:'shortTime'}}</i>
+<div class="day-wrapper">
+    <div class="day-indicator" ng-class="{'today' : $ctrl.schedule.today}">
+        <span class="day-of-month">{{$ctrl.schedule.date | date:'d'}}</span>
+        <span class="day-of-week">{{$ctrl.schedule.date | date:'EEE'}}</span>
+    </div>
+
+    <div class="event-container">
+        <div ng-repeat="event in $ctrl.schedule.events"
+             class="event"
+             title="{{event.description}}"
+             ng-class="::{'live':$ctrl.isLive(event), 'expired':$ctrl.isExpired(event)}">
+            <b>{{event.summary}}</b>
+            <br>
+            <i>{{event.start.dateTime | date:'shortTime'}}</i> - <i>{{event.end.dateTime |
+            date:'shortTime'}}</i>
+        </div>
     </div>
 </div>
