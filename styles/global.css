@@ -9,13 +9,12 @@ button {
     cursor: pointer;
 }
 
-button[disabled] {
-    cursor: no-drop;
+input[type=checkbox] {
+    cursor: pointer;
 }
 
-input {
-    display: block;
-    width: 100%;
+button[disabled] {
+    cursor: no-drop;
 }
 
 div[ng-message] {

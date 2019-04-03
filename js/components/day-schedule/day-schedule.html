@@ -9,6 +9,7 @@
     </div>
 
     <div class="event-container">
+        <!-- TODO Create an 'Event' directive -->
         <div ng-repeat="event in $ctrl.schedule.events"
              class="event"
              title="{{event.description}}"
@@ -17,6 +18,7 @@
             <br>
             <i>{{event.start.dateTime | date:'shortTime'}}</i> - <i>{{event.end.dateTime |
             date:'shortTime'}}</i>
+            <b ng-show="event.recurrence">REOCCURRING EVENT</b>
         </div>
     </div>
 </div>

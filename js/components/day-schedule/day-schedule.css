@@ -4,6 +4,8 @@ day-schedule {
     justify-content: flex-start;
     align-items: flex-start;
     width: 100%;
+    padding: 0 .25em;
+    box-sizing: border-box;
 }
 
 day-schedule > div.day-wrapper {

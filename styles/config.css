@@ -1,14 +1,116 @@
-div.config {
-    padding: .5em;
+html, body, div.main {
+    height: 100%;
+    width: 100%;
+}
+
+div.main {
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+input {
+    box-sizing: border-box;
+}
+
+fieldset {
+    margin-bottom: 1em;
 }
 
 div.dummy-calendar {
     display: flex;
     flex-direction: column;
+    align-content: flex-start;
     width: 320px;
-    height: 300px;
-    margin: .5em;
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, .5);
-    border-radius: 5px;
+    height: 100%;
     overflow-y: auto;
+}
+
+div.example-warning {
+    padding: .1em;
+    background-color: #EF5350;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    box-sizing: border-box;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+}
+
+div.example-warning > div {
+    color: white;
+    font-size: x-small;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+div.config-wrapper {
+    flex: 1 0 auto;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+div.error-messages {
+    box-sizing: border-box;
+    display: flex;
+    background-color: #F44336;
+    color: white;
+    font-weight: bold;
+    margin: .5em;
+    padding: .25em .5em;
+}
+
+/* Smaller than 601px in width */
+@media only screen and (max-width: 600px) {
+    div.main {
+        flex-direction: column;
+        align-content: center;
+    }
+
+    div.dummy-calendar {
+        align-content: center;
+        width: 100%;
+        height: 300px;
+        overflow-y: auto;
+    }
+
+    div.example-warning {
+        flex-direction: row;
+        width: 100%;
+        height: 1em;
+        max-height: 1em;
+    }
+
+    div.example-warning > div {
+        line-height: 1.5em;
+    }
+}
+
+/* Bigger than 600px in width */
+@media only screen and (min-width: 601px) {
+    div.dummy-calendar {
+        max-width: 320px;
+        min-width: 320px;
+    }
+
+    div.example-warning {
+        flex-direction: column;
+        width: 1em;
+        height: 100%;
+        max-width: 1em;
+    }
+
+    div.config-wrapper {
+        width: calc(100% - 320px - 1em);
+        max-width: 500px;
+    }
+
+    div.example-warning > div {
+        transform: rotate(-90deg);
+    }
 }

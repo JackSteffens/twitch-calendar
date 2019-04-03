@@ -22,61 +22,118 @@
     <script type="text/javascript" src="js/components/calendar/calendar.directive.js"></script>
     <script type="text/javascript" src="js/components/calendar/calendar.controller.js"></script>
     <script type="text/javascript" src="js/services/calendar.service.js"></script>
+    <script type="text/javascript" src="js/services/recurrence.service.js"></script>
     <script type="text/javascript" src="js/constants/segments.constant.js"></script>
+    <script type="text/javascript" src="js/models/event.factory.js"></script>
+    <script type="text/javascript" src="js/models/recurrence-ruleset.factory.js"></script>
 </head>
 <body>
-<div ng-app="hypnoised.calendar" ng-controller="ConfigCtrl as $ctrl" class="config">
+<div ng-app="hypnoised.calendar" ng-controller="ConfigCtrl as $ctrl" class="main">
+    <!-- Calendar example -->
     <div class="dummy-calendar">
         <calendar g-calendar="$ctrl.calendar"></calendar>
     </div>
 
-    <div ng-if="$ctrl.error" style="outline:1px solid red;">
-        {{$ctrl.error}}
+    <div class="example-warning">
+        <div>CALENDAR PREVIEW</div>
     </div>
 
+    <!-- Loading indicator -->
     <div ng-show="!$ctrl.authObj">Loading config</div>
 
-    <div ng-show="$ctrl.authObj">
+    <div class="config-wrapper" ng-show="$ctrl.authObj">
         <form name="$ctrl.form">
-            <label>
-                Google API key
-                <input type="password"
-                       name="apiKey"
-                       required
-                       ng-model="$ctrl.config.broadcaster.apiKey"
-                       placeholder="AIzaSyA2OjZyfInigiK0K71GKaUzatKHJ4U8VlA">
-            </label>
-            <div ng-messages="$ctrl.form.apiKey.$error" role="alert">
-                <div ng-message="required">
-                    An API key is required since Google has made their API policies stricter.
-                </div>
+
+            <!-- Google specific configuration [REQUIRED] -->
+            <ng-form name="$ctrl.form.googleCalendar">
+                <fieldset>
+                    <legend>Google Calendar Configuration</legend>
+                    <label>
+                        Google API key
+                        <input type="password"
+                               name="apiKey"
+                               required
+                               ng-model="$ctrl.config.broadcaster.apiKey"
+                               placeholder="AIzaSyA2OjZyfInigiK0K71GKaUzatKHJ4U8VlA">
+                    </label>
+                    <div ng-messages="$ctrl.form.googleCalendar.apiKey.$error" role="alert">
+                        <div ng-message="required">
+                            An API key is required since Google has made their API policies stricter.
+                        </div>
+                    </div>
+                    <br>
+
+                    <label>
+                        Google Calendar ID
+                        <input type="text"
+                               name="calendarId"
+                               required
+                               ng-pattern="$ctrl.calendarIdPattern"
+                               ng-model="$ctrl.config.broadcaster.calendarId"
+                               placeholder="sOmErAnDoMtExT@group.calendar.google.com">
+                    </label>
+                    <div ng-messages="$ctrl.form.googleCalendar.calendarId.$error" role="alert">
+                        <div ng-message="required">
+                            A Calendar ID is required, or else we don't know what calendar to display
+                        </div>
+                        <div ng-message="pattern">
+                            A Calendar ID always ends with
+                            <mark>@group.calendar.google.com</mark>
+                        </div>
+                    </div>
+                </fieldset>
+            </ng-form>
+
+            <!-- Calendar Specific Configuration -->
+            <ng-form name="$ctrl.form.visualConfiguration">
+                <fieldset>
+                    <legend>Visual Configuration</legend>
+
+                    <label>
+                        Show Expired Events
+                        <div>
+                            <input type="checkbox"
+                                   name="showExpiredEvents"
+                                   ng-model="$ctrl.config.broadcaster.showExpiredEvents">
+                            <span>{{$ctrl.config.broadcaster.showExpiredEvents ? 'Yes' : 'No'}}</span>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label title="Shows expired events up until the set amount of days. 0 will never show expired events.">
+                        Show expired events up until x days back
+                        <input type="number"
+                               step="1"
+                               min="0"
+                               name="maximumExpiryDays"
+                               ng-required="$ctrl.config.broadcaster.showExpiredEvents"
+                               placeholder="0"
+                               ng-model="$ctrl.config.broadcaster.maximumExpiryDays"
+                               ng-disabled="!$ctrl.config.broadcaster.showExpiredEvents">
+                    </label>
+                    <div ng-messages="$ctrl.form.visualConfiguration.maximumExpiryDays.$error" role="alert">
+                        <div ng-message="required">
+                            Please set the maximum expiry days.
+                        </div>
+                    </div>
+                </fieldset>
+            </ng-form>
+
+
+            <button ng-disabled="$ctrl.form.$invalid || $ctrl.form.$pristine"
+                    ng-click="$ctrl.saveBroadcasterConfig()">
+                Test & Save
+            </button>
+
+            <!-- Display errors  -->
+            <div class="error-messages" ng-if="$ctrl.error">
+                {{$ctrl.error}}
             </div>
-            <br>
-
-            <label>
-                Google Calendar ID
-                <input type="text"
-                       name="calendarId"
-                       required
-                       ng-pattern="$ctrl.calendarIdPattern"
-                       ng-model="$ctrl.config.broadcaster.calendarId"
-                       placeholder="vqgc7vs42o478h4nvecn0l30pg@group.calendar.google.com">
-            </label>
-            <div ng-messages="$ctrl.form.calendarId.$error" role="alert">
-                <div ng-message="required">
-                    A Calendar ID is required, or else we don't know what calendar to display
-                </div>
-                <div ng-message="pattern">
-                    A Calendar ID always ends with
-                    <mark>@group.calendar.google.com</mark>
-                </div>
-            </div>
-
-            <br>
-
-            <button ng-disabled="$ctrl.form.$invalid || $ctrl.form.$pristine" ng-click="$ctrl.saveBroadcasterConfig()">Test & Save</button>
         </form>
     </div>
+
+
 </div>
 </body>
 </html>
