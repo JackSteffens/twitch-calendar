@@ -3,13 +3,13 @@ angular.module('hypnoised.calendar')
        .service('RecurrenceService', function ($q, RecurrenceRuleset) {
            let $service = this;
            const DAYS = {
-               'MO': 0,
-               'TU': 1,
-               'WE': 2,
-               'TH': 3,
-               'FR': 4,
-               'SA': 5,
-               'SU': 6
+               'MO': 1,
+               'TU': 2,
+               'WE': 3,
+               'TH': 4,
+               'FR': 5,
+               'SA': 6,
+               'SU': 0
            };
            const DAYS_IN_WEEK = 7;
            const DAY_IN_MILLISECONDS = 86400000;
@@ -40,10 +40,12 @@ angular.module('hypnoised.calendar')
                return $q((resolve) => {
                    const eventStartDate = new Date(event.start.dateTime);
                    const eventEndDate = new Date(event.end.dateTime);
+                   const deltaTimestamp = eventEndDate.getTime() - eventStartDate.getTime();
                    const now = new Date();
                    let indexDate = angular.copy(eventStartDate);
                    let indexCount = 0;
                    let untilDate = new Date();
+                   let constructedEvents = [angular.copy(event)];
 
                    if (ruleset.UNTIL) {
                        untilDate = partseUntilRulesetDate(ruleset.UNTIL);
@@ -51,27 +53,25 @@ angular.module('hypnoised.calendar')
 
                    while (indexDate.getTime() <= now.getTime()) {
                        indexCount++;
-                       if (ruleset.UNTIL && indexDate.getTime() > untilDate.getTime()) {
-                           break;
-                       }
-
-                       if (ruleset.COUNT && !isAllowedByCount(indexCount, ruleset.COUNT)) {
-                           break;
-                       }
 
                        if (ruleset.BY_DAY) {
                            indexDate = getNextDate(indexDate, ruleset.BY_DAY);
                        } else if (ruleset.INTERVAL) {
                            // every x weeks
                        }
+
+                       if (ruleset.UNTIL && indexDate.getTime() > untilDate.getTime()) {
+                           break;
+                       } else if (ruleset.COUNT && !isAllowedByCount(indexCount, ruleset.COUNT)) {
+                           break;
+                       }
+
+                       event.start.dateTime = indexDate;
+                       event.end.dateTime = new Date(indexDate.getTime() + deltaTimestamp);
+                       constructedEvents.push(angular.copy(event));
                    }
 
-                   let deltaDate = eventEndDate.getTime() - eventStartDate.getTime();
-
-                   event.end.dateTime = new Date(indexDate.getTime() + deltaDate);
-                   event.start.dateTime = indexDate;
-
-                   resolve(event);
+                   resolve(constructedEvents);
                });
            }
 
@@ -90,9 +90,9 @@ angular.module('hypnoised.calendar')
             * @return {Date}
             */
            function getNextDate(givenDate, allowedDays) {
-               let currentDay = givenDate.getDay();
+               let currentDay = givenDate.getUTCDay();
                let chosenNextDay = DAYS[allowedDays.find((day) => DAYS[day] > currentDay)] || DAYS[allowedDays[0]];
-               let delta = (chosenNextDay - currentDay) + 1; // +1 since days are 0 indexed
+               let delta = (chosenNextDay - currentDay); // +1 since days are 0 indexed
                let neededDays = delta <= 0 ? (DAYS_IN_WEEK + delta) : delta;
                return new Date(givenDate.getTime() + (neededDays * DAY_IN_MILLISECONDS));
            }

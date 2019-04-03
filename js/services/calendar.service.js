@@ -176,8 +176,8 @@ angular.module('hypnoised.calendar')
                      .then((responses) => {
                          // concat pseudoEvents with responses
                          console.log(`Finished ${constructPromises.length} promises : `, responses);
-                         responses.forEach((event) => {
-                             pseudoEvents.push(event);
+                         responses.forEach((events) => {
+                             pseudoEvents = pseudoEvents.concat(events);
                          });
                          resolve(pseudoEvents);
                      });
@@ -204,9 +204,9 @@ angular.module('hypnoised.calendar')
                                // daily rules
                            } else if (ruleset.FREQ === 'WEEKLY') {
                                RecurrenceService.constructWeekly(modifiedEvent, ruleset)
-                                                .then((constructedEvent) => {
-                                                    console.debug('constructed event : ', constructedEvent);
-                                                    resolve(constructedEvent);
+                                                .then((constructedEvents) => {
+                                                    console.debug('constructed event : ', constructedEvents);
+                                                    resolve(constructedEvents);
                                                 });
                            } else if (ruleset.FREQ === 'MONTHLY') {
                                // monthly rules

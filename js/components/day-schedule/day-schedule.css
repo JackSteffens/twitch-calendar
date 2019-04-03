@@ -70,6 +70,8 @@ day-schedule > div.day-wrapper > div.event-container > div.event {
     width: 100%;
     box-sizing: border-box;
     margin-bottom: .5em;
+    transition-property: color, background-color, border;
+    transition-duration: .3s, .3s, .3s;
 }
 
 day-schedule > div.day-wrapper > div.event-container > div.event > i {
@@ -85,4 +87,10 @@ day-schedule > div.day-wrapper > div.event-container > div.event.expired {
     background-color: #FAFAFA;
     border: 1px solid #B39DDB;
     color: #B39DDB;
+}
+
+day-schedule > div.day-wrapper > div.event-container > div.event.loading {
+    background-color: #FAFAFA;
+    border: 1px solid #B39DDB;
+    color: rgba(0, 0, 0, 0);
 }

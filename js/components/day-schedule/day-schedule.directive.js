@@ -6,6 +6,7 @@ angular.module('hypnoised.calendar')
                templateUrl: 'js/components/day-schedule/day-schedule.html',
                controller: function () {
                    let $ctrl = this;
+                   $ctrl.loading = false;
                    $ctrl.isLive = isLive;
                    $ctrl.isExpired = isExpired;
 
@@ -26,11 +27,17 @@ angular.module('hypnoised.calendar')
                        if (changes.schedule && changes.schedule.currentValue) {
                            $ctrl.schedule = changes.schedule.currentValue;
                        }
+
+                       if (changes.loading && changes.loading.currentValue !== undefined) {
+                           $ctrl.loading = changes.loading.currentValue;
+                           console.log('loading changed');
+                       }
                    };
                },
                controllerAs: '$ctrl',
                scope: {
-                   schedule: '<'
+                   schedule: '<',
+                   loading: '<'
                },
                bindToController: true,
                replace: false

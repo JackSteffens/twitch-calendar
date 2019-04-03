@@ -3,7 +3,7 @@
     <span>{{$ctrl.description}}</span>
 </div>
 
-<day-schedule ng-repeat="daySchedule in $ctrl.calendar" schedule="daySchedule"></day-schedule>
+<day-schedule loading="$ctrl.loading" ng-repeat="daySchedule in $ctrl.calendar" schedule="daySchedule"></day-schedule>
 
 <div ng-if="$ctrl.calendar && !$ctrl.calendar.length" class="no-events">
     <i>No events</i>

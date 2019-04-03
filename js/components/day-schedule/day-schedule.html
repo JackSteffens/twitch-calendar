@@ -10,15 +10,15 @@
 
     <div class="event-container">
         <!-- TODO Create an 'Event' directive -->
-        <div ng-repeat="event in $ctrl.schedule.events"
+        <div ng-repeat="event in $ctrl.schedule.events track by $index"
              class="event"
              title="{{event.description}}"
-             ng-class="::{'live':$ctrl.isLive(event), 'expired':$ctrl.isExpired(event)}">
+             ng-class="{'live':$ctrl.isLive(event), 'expired':$ctrl.isExpired(event), 'loading':$ctrl.loading}">
             <b>{{event.summary}}</b>
             <br>
             <i>{{event.start.dateTime | date:'shortTime'}}</i> - <i>{{event.end.dateTime |
             date:'shortTime'}}</i>
-            <b ng-show="event.recurrence">REOCCURRING EVENT</b>
+            <i ng-show="event.recurrence">- Reoccurring Event</i>
         </div>
     </div>
 </div>
