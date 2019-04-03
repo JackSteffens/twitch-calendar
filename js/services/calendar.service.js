@@ -11,6 +11,7 @@ angular.module('hypnoised.calendar')
            const EXTENSION_VERSION = '0.0.1';
            const DAY_IN_MILLISECONDS = 86400000;
            const TODAY = new Date();
+           const CONSOLE_STYLING = 'color:red; font-weight:bold;';
            let _configPromise = undefined;
            let configRetryCount = 0;
            let _isAuthenticated = false;
@@ -41,8 +42,6 @@ angular.module('hypnoised.calendar')
                        resolve(config);
                    });
                    _configPromise.then((config) => {
-                       console.log('transformed : ', config);
-                       console.log('window.Twitch.ext.configuration : ', window.Twitch.ext.configuration);
                        $service.config = config;
                    }, (error) => {
                        console.error(error);
@@ -94,6 +93,7 @@ angular.module('hypnoised.calendar')
                     >}
             */
            function constructCalendarAsync(events) {
+               console.log(`%cStarting off with ${events.length} events`, CONSOLE_STYLING);
                return $q((resolve, reject) => {
                    if (!$service.config) {
                        reject('Config was not loaded yet');
@@ -101,56 +101,88 @@ angular.module('hypnoised.calendar')
 
                    let groups = [];
                    let knownDates = new Set(); // formatted dates (string)
+                   constructPseudoEvents(events)
+                       .then((pseudoEvents) => {
+                           console.log(`%cFiltering through ${pseudoEvents.length} PseudoEvents`, CONSOLE_STYLING, pseudoEvents);
 
-                   events.forEach((event) => {
-                       // FIXME This ugly block of code
-                       let eventEndDate = new Date(event.end.dateTime);
-                       if (isPastMaximumExpiry(eventEndDate)) { // Expired events past the maximum expiry date are ignored
-                           if (event.recurrence && event.recurrence[0]) { // apply recurrence
-                               event = applyRecurrenceRules(event);
-                               eventEndDate = new Date(event.end.dateTime);
-                               if (isPastMaximumExpiry(eventEndDate)) { // Recurrence event may be expired too, so check again
+                           pseudoEvents.forEach((pEvent, pEventIndex) => {
+                               // FIXME This ugly block of code
+                               let eventEndDate = new Date(pEvent.end.dateTime);
+                               if (isPastMaximumExpiry(eventEndDate)) {
                                    return;
                                }
-                           } else {
-                               return;
+
+                               let eventStartDate = new Date(pEvent.start.dateTime);
+                               let formattedDate = $filter('date')(eventStartDate, 'shortDate');
+                               if (knownDates.has(formattedDate)) {
+                                   let group = groups.find((group) => $filter('date')(group.date, 'shortDate') === formattedDate);
+                                   group.events.push(pEvent);
+                                   group.events.sort((event1, event2) => {
+                                       return new Date(event1.start.dateTime).getTime() - new Date(event2.start.dateTime).getTime();
+                                   });
+                               } else {
+                                   knownDates.add(formattedDate);
+                                   groups.push({
+                                       date: eventStartDate,
+                                       events: [pEvent],
+                                       today: isToday(eventStartDate),
+                                       week: getWeek(eventStartDate)
+                                   });
+                               }
+                               console.log(`Processed (${pEventIndex + 1}/${pseudoEvents.length}) Events`);
+                           });
+
+                           // sorting
+                           groups.sort((group1, group2) => {
+                               return group1.date.getTime() - group2.date.getTime();
+                           });
+
+                           // checking if the days indicate the start of a week
+                           for (let index = groups.length - 1; index >= 0; index--) {
+                               if (index > 0) {
+                                   // TODO Rename to 'first event of the week'
+                                   groups[index].startOfNewWeek = groups[index].week !== groups[index - 1].week;
+                               }
                            }
-                       }
+                           if (groups.length) {
+                               groups[0].startOfNewWeek = true;
+                           }
+                           console.log('groups : ', groups);
+                           resolve(groups);
+                       }, (reason) => {
+                           console.error('Unable to cosntruct pseudo events', reason);
+                       });
+               });
+           }
 
-
-                       let eventStartDate = new Date(event.start.dateTime);
-                       let formattedDate = $filter('date')(eventStartDate, 'shortDate');
-                       if (knownDates.has(formattedDate)) {
-                           let group = groups.find((group) => $filter('date')(group.date, 'shortDate') === formattedDate);
-                           group.events.push(event);
-                           group.events.sort((event1, event2) => {
-                               return new Date(event1.start.dateTime).getTime() - new Date(event2.start.dateTime).getTime();
-                           });
+           /**
+            *
+            * @param {Array<Event>}events
+            * @return {Promise<Array>}
+            */
+           function constructPseudoEvents(events) {
+               let pseudoEvents = [];
+               let constructPromises = [];
+               return $q((resolve) => {
+                   events.forEach((event) => {
+                       if (event.recurrence && event.recurrence[0]) {
+                           constructPromises.push(applyRecurrenceRules(event));
                        } else {
-                           knownDates.add(formattedDate);
-                           groups.push({
-                               date: eventStartDate,
-                               events: [event],
-                               today: isToday(eventStartDate),
-                               week: getWeek(eventStartDate)
-                           });
+                           pseudoEvents.push(event);
                        }
                    });
 
-                   // sorting
-                   groups.sort((group1, group2) => {
-                       return group1.date.getTime() - group2.date.getTime();
-                   });
+                   $q.all(constructPromises)
+                     .then((responses) => {
+                         // concat pseudoEvents with responses
+                         console.log(`Finished ${constructPromises.length} promises : `, responses);
+                         responses.forEach((event) => {
+                             pseudoEvents.push(event);
+                         });
+                         resolve(pseudoEvents);
+                     });
 
-                   // checking if the days indicate the start of a week
-                   for (let index = groups.length - 1; index >= 0; index--) {
-                       if (index !== 0) {
-                           // TODO Rename to 'first event of the week'
-                           groups[index].startOfNewWeek = groups[index].week !== groups[index - 1].week;
-                       }
-                   }
-                   groups[0].startOfNewWeek = true;
-                   resolve(groups);
+
                });
            }
 
@@ -158,35 +190,37 @@ angular.module('hypnoised.calendar')
             * CREATE A NEW EVENT BASED ON THE RECURRENCE RULES UP UNTIL YOU REACH
             * AN EVENT WITH START TIME GREATER OR EQUAL TO TODAY, RETURN THAT EVENT. DON'T GO FURTHER
             * AS SOME EVENTS MAY GO UP UNTIL INFINITE
-            * @param {{recurrence:Array, start:{dateTime:string}, end:{dateTime:string}}} baseEvent
+            * @param {{recurrence:Array, start:{dateTime:string}, end:{dateTime:string}}} originalEvent
+            * @return {Promise<Array<Event>>}
             */
-           function applyRecurrenceRules(baseEvent) {
-               let event = angular.copy(baseEvent);
-               try {
-                   let ruleset = parseRecurrenceRules(event.recurrence[0]);
-                   delete event.recurrence; // no longer needed
-                   if (ruleset) {
-                       console.debug('Build a ruleset ', ruleset);
-                       if (ruleset.FREQ === 'DAILY') {
-                           // daily rules
-                       } else if (ruleset.FREQ === 'WEEKLY') {
-                           RecurrenceService.constructWeekly(event, ruleset)
-                                     .then((constructedEvent) => {
-                                         console.log('constructed event : ', constructedEvent);
-                                     });
-                       } else if (ruleset.FREQ === 'MONTHLY') {
-                           // monthly rules
-                       } else if (ruleset.FREQ === 'YEARLY') {
-                           // yearly rules
+           function applyRecurrenceRules(originalEvent) {
+               let modifiedEvent = angular.copy(originalEvent);
+               return $q((resolve, reject) => {
+                   try {
+                       let ruleset = parseRecurrenceRules(modifiedEvent.recurrence[0]);
+                       if (ruleset) {
+                           console.debug('Build a ruleset ', ruleset);
+                           if (ruleset.FREQ === 'DAILY') {
+                               // daily rules
+                           } else if (ruleset.FREQ === 'WEEKLY') {
+                               RecurrenceService.constructWeekly(modifiedEvent, ruleset)
+                                                .then((constructedEvent) => {
+                                                    console.debug('constructed event : ', constructedEvent);
+                                                    resolve(constructedEvent);
+                                                });
+                           } else if (ruleset.FREQ === 'MONTHLY') {
+                               // monthly rules
+                           } else if (ruleset.FREQ === 'YEARLY') {
+                               // yearly rules
+                           }
                        }
+                   } catch (e) {
+                       console.error('Could not parse the Event its recurring rules', e);
+                       console.debug('Failed recurring Event : ', originalEvent);
+                       // resetting recurring event since we couldn't parse its rules
+                       reject(originalEvent);
                    }
-               } catch (e) {
-                   console.error('Could not parse the Event its recurring rules', e);
-                   console.debug('Failed recurring Event : ', baseEvent);
-                   // resetting recurring event since we couldn't parse its rules
-                   event = baseEvent;
-               }
-               return event;
+               });
            }
 
            /**
@@ -202,20 +236,21 @@ angular.module('hypnoised.calendar')
                // FIXME "-1<DAY>" should be implemented too, note the minus (-)
                let byDayPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
                let byMonthPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
+               let untilPattern = new RegExp(/(?:UNTIL=)(.*Z)(\;|$)/m);
 
                /**
-                * @param {array} group
-                * @param {number} index
+                * @param {array} groups
+                * @param {number} groupNumber
                 * @return {undefined}
                 */
-               function getValue(group, index) {
-                   return group ? group[index] : undefined;
+               function getValue(groups, groupNumber) {
+                   return groups ? groups[groupNumber] : undefined;
                }
 
                return {
                    FREQ: getValue((ruleString).match(freqPattern), 2),
                    COUNT: getValue((ruleString).match(countPattern), 2),
-                   UNTIL: undefined,
+                   UNTIL: getValue((ruleString).match(untilPattern), 1),
                    INTERVAL: undefined,
                    BY_DAY: (() => {
                        let string = getValue((ruleString).match(byDayPattern), 1);

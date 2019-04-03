@@ -1,10 +1,14 @@
-<div class="calendar-summary">
+<div class="calendar-summary" ng-class="{'loading' : $ctrl.loading}">
     <h3>{{$ctrl.summary}}</h3>
     <span>{{$ctrl.description}}</span>
 </div>
 
 <day-schedule ng-repeat="daySchedule in $ctrl.calendar" schedule="daySchedule"></day-schedule>
 
-<div ng-if="!$ctrl.calendar || !$ctrl.calendar.length" class="no-events">
+<div ng-if="$ctrl.calendar && !$ctrl.calendar.length" class="no-events">
     <i>No events</i>
+</div>
+
+<div ng-show="$ctrl.loading">
+    <i>Loading calendar</i>
 </div>
