@@ -1,0 +1,26 @@
+{
+  "name": "twitch-calendar",
+  "version": "1.0.0",
+  "description": "Twitch Extension for importing Google Calendar data",
+  "main": "panel.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JackSteffens/twitch-calendar.git"
+  },
+  "keywords": [
+    "Twitch",
+    "Extension",
+    "Google",
+    "Calendar",
+    "Hypnoised"
+  ],
+  "author": "Jack Steffens",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JackSteffens/twitch-calendar/issues"
+  },
+  "homepage": "https://github.com/JackSteffens/twitch-calendar#readme"
+}

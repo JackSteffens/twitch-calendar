@@ -2,7 +2,7 @@
 angular.module('hypnoised.calendar')
        .service('RecurrenceService', function ($q, RecurrenceRuleset) {
            let $service = this;
-           const DAYS = {
+           const DAYS_IN_UTC = {
                'MO': 1,
                'TU': 2,
                'WE': 3,
@@ -11,13 +11,13 @@ angular.module('hypnoised.calendar')
                'SA': 6,
                'SU': 0
            };
-           const DAYS_IN_WEEK = 7;
+           const TOTAL_DAYS_IN_WEEK = 7;
            const DAY_IN_MILLISECONDS = 86400000;
 
            $service.constructWeekly = constructWeekly;
 
 
-           function partseUntilRulesetDate(dateString) {
+           function parseUntilRulesetDate(dateString) {
                let year = dateString.slice(0, 4);
                let month = dateString.slice(4, 6);
                let day = dateString.slice(6, 8);
@@ -33,7 +33,7 @@ angular.module('hypnoised.calendar')
            /**
             *
             * @param event
-            * @param ruleset
+            * @param {RecurrenceRuleset} ruleset
             * @return {Promise}
             */
            function constructWeekly(event, ruleset) {
@@ -48,7 +48,7 @@ angular.module('hypnoised.calendar')
                    let constructedEvents = [angular.copy(event)];
 
                    if (ruleset.UNTIL) {
-                       untilDate = partseUntilRulesetDate(ruleset.UNTIL);
+                       untilDate = parseUntilRulesetDate(ruleset.UNTIL);
                    }
 
                    while (indexDate.getTime() <= now.getTime()) {
@@ -56,8 +56,12 @@ angular.module('hypnoised.calendar')
 
                        if (ruleset.BY_DAY) {
                            indexDate = getNextDate(indexDate, ruleset.BY_DAY);
+                           // If 'getNextDate' caused the week to pass, add the interval weeks
+                           if (ruleset.INTERVAL && DAYS_IN_UTC[ruleset.BY_DAY[0]] === indexDate.getUTCDay()) {
+                               indexDate = getNextInterval(indexDate, ruleset.FREQ, ruleset.INTERVAL);
+                           }
                        } else if (ruleset.INTERVAL) {
-                           // every x weeks
+                           indexDate = getNextInterval(indexDate, ruleset.FREQ, ruleset.INTERVAL);
                        }
 
                        if (ruleset.UNTIL && indexDate.getTime() > untilDate.getTime()) {
@@ -75,6 +79,27 @@ angular.module('hypnoised.calendar')
                });
            }
 
+           /**
+            * @param {Date} date
+            * @param {'DAILY', 'WEEKLY', 'MONTHLY'}frequency
+            * @param {number} interval
+            * @return {Date}
+            */
+           function getNextInterval(date, frequency, interval) {
+               let nextInterval = 0;
+               switch (frequency) {
+                   case'DAILY':
+                       nextInterval = DAY_IN_MILLISECONDS * frequency;
+                       break;
+                   case 'WEEKLY':
+                       nextInterval = DAY_IN_MILLISECONDS * TOTAL_DAYS_IN_WEEK * frequency;
+                       break;
+                   case 'MONTHLY':
+                   // get day of the month 0-31, get next interval month and set the day accordingly
+               }
+               return new Date(date.getTime() + nextInterval);
+           }
+
            function isAllowedByCount(countIndex, maxCount) {
                if (maxCount === null || maxCount === undefined) {
                    return true;
@@ -86,14 +111,14 @@ angular.module('hypnoised.calendar')
            /**
             * TODO Write tests for this, as it's brittle
             * @param {Date} givenDate
-            * @param {Array<string>} allowedDays
+            * @param {[?'MO', ?'TU', ?'WE', ?'TH', ?'FR', ?'SA', ?'SU']} allowedDays
             * @return {Date}
             */
            function getNextDate(givenDate, allowedDays) {
                let currentDay = givenDate.getUTCDay();
-               let chosenNextDay = DAYS[allowedDays.find((day) => DAYS[day] > currentDay)] || DAYS[allowedDays[0]];
+               let chosenNextDay = DAYS_IN_UTC[allowedDays.find((day) => DAYS_IN_UTC[day] > currentDay)] || DAYS_IN_UTC[allowedDays[0]];
                let delta = (chosenNextDay - currentDay); // +1 since days are 0 indexed
-               let neededDays = delta <= 0 ? (DAYS_IN_WEEK + delta) : delta;
+               let neededDays = delta <= 0 ? (TOTAL_DAYS_IN_WEEK + delta) : delta;
                return new Date(givenDate.getTime() + (neededDays * DAY_IN_MILLISECONDS));
            }
        });
