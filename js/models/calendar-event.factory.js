@@ -1,6 +1,6 @@
 'use strict';
 angular.module('hypnoised.calendar')
-       .factory('Event', function ($q) {
+       .factory('CalendarEvent', function ($q) {
            /**
             *
             * @param {Date} startDate
@@ -9,12 +9,12 @@ angular.module('hypnoised.calendar')
             * @param {string} timezone
             * @constructor
             */
-           function Event(startDate, endDate, ruleset, timezone) {
+           function CalendarEvent(startDate, endDate, ruleset, timezone) {
                this.startDate = startDate;
                this.endDate = endDate;
                this.ruleset = ruleset;
                this.timezone = timezone;
            }
 
-           return Event;
+           return CalendarEvent;
        });

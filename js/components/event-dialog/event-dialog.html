@@ -1,0 +1,6 @@
+<div class="wrapper">
+    <h3>{{$ctrl.event.summary}}</h3>
+    <span>{{$ctrl.event.description}}</span>
+    <i>{{$ctrl.event.start.dateTime | date:'shortTime'}}</i> - <i>{{$ctrl.event.end.dateTime | date:'shortTime'}}</i>
+    <button ng-click="$ctrl.close()">close</button>
+</div>

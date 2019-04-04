@@ -157,7 +157,7 @@ angular.module('hypnoised.calendar')
 
            /**
             *
-            * @param {Array<Event>}events
+            * @param {Array<CalendarEvent>}events
             * @return {Promise<Array>}
             */
            function constructPseudoEvents(events) {
@@ -191,7 +191,7 @@ angular.module('hypnoised.calendar')
             * AN EVENT WITH START TIME GREATER OR EQUAL TO TODAY, RETURN THAT EVENT. DON'T GO FURTHER
             * AS SOME EVENTS MAY GO UP UNTIL INFINITE
             * @param {{recurrence:Array, start:{dateTime:string}, end:{dateTime:string}}} originalEvent
-            * @return {Promise<Array<Event>>}
+            * @return {Promise<Array<CalendarEvent>>}
             */
            function applyRecurrenceRules(originalEvent) {
                let modifiedEvent = angular.copy(originalEvent);

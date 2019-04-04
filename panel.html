@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="styles/panel.css">
     <link rel="stylesheet" type="text/css" href="js/components/day-schedule/day-schedule.css">
     <link rel="stylesheet" type="text/css" href="js/components/calendar/calendar.css">
+    <link rel="stylesheet" type="text/css" href="js/components/event-dialog/event-dialog.css">
 
     <!-- Dependencies -->
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
@@ -21,10 +22,13 @@
     <script type="text/javascript" src="js/components/calendar/calendar.directive.js"></script>
     <script type="text/javascript" src="js/components/calendar/calendar.controller.js"></script>
     <script type="text/javascript" src="js/services/calendar.service.js"></script>
+    <script type="text/javascript" src="js/services/event-dialog.service.js"></script>
     <script type="text/javascript" src="js/services/recurrence.service.js"></script>
     <script type="text/javascript" src="js/constants/segments.constant.js"></script>
-    <script type="text/javascript" src="js/models/event.factory.js"></script>
+    <script type="text/javascript" src="js/models/calendar-event.factory.js"></script>
     <script type="text/javascript" src="js/models/recurrence-ruleset.factory.js"></script>
+    <script type="text/javascript" src="js/components/event-dialog/event-dialog.directive.js"></script>
+    <script type="text/javascript" src="js/components/event-dialog/event-dialog.controller.js"></script>
 </head>
 <body>
 <div ng-app="hypnoised.calendar" ng-controller="PanelCtrl as $ctrl" class="app">

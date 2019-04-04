@@ -4,11 +4,12 @@ angular.module('hypnoised.calendar')
            return {
                restrict: 'E',
                templateUrl: 'js/components/day-schedule/day-schedule.html',
-               controller: function () {
+               controller: function (EventDialogService) {
                    let $ctrl = this;
                    $ctrl.loading = false;
                    $ctrl.isLive = isLive;
                    $ctrl.isExpired = isExpired;
+                   $ctrl.openEvent = openEvent;
 
                    function isLive(event) {
                        let startDate = new Date(event.start.dateTime).getTime();
@@ -23,6 +24,14 @@ angular.module('hypnoised.calendar')
                        return now > endDate;
                    }
 
+                   /**
+                    * @param {Event} event
+                    * @param {CalendarEvent} calendarEvent
+                    */
+                   function openEvent(event, calendarEvent) {
+                       EventDialogService.openEvent(event, calendarEvent);
+                   }
+
                    $ctrl.$onChanges = function (changes) {
                        if (changes.schedule && changes.schedule.currentValue) {
                            $ctrl.schedule = changes.schedule.currentValue;
@@ -30,7 +39,6 @@ angular.module('hypnoised.calendar')
 
                        if (changes.loading && changes.loading.currentValue !== undefined) {
                            $ctrl.loading = changes.loading.currentValue;
-                           console.log('loading changed');
                        }
                    };
                },

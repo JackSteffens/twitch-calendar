@@ -3,6 +3,12 @@ html, body {
     padding: 0;
     font-family: sans-serif;
     background-color: #FAFAFA;
+    height: 100vh;
+}
+
+div.app {
+    height: 100%;
+    overflow-y: auto;
 }
 
 button {
@@ -19,4 +25,8 @@ button[disabled] {
 
 div[ng-message] {
     color: red;
+}
+
+.clickable {
+    cursor: pointer;
 }
