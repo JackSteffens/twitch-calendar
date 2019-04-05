@@ -15,6 +15,7 @@ angular.module('hypnoised.calendar')
            let _configPromise = undefined;
            let configRetryCount = 0;
            let _isAuthenticated = false;
+           let _originalEvents = new Map();
 
            $service.authObj = {
                channelId: undefined,
@@ -25,12 +26,14 @@ angular.module('hypnoised.calendar')
            $service.config = undefined;
            $service.getConfig = getConfig;
            $service.getAuth = getAuth;
+           $service.getOriginalEvents = getOriginalEvents;
            $service.saveDeveloperConfig = saveDeveloperConfig;
            $service.saveGlobalConfig = saveGlobalConfig;
            $service.saveBroadcasterConfig = saveBroadcasterConfig;
            $service.fetchCalendar = fetchCalendar;
            $service.constructCalendarAsync = constructCalendarAsync;
            $service.constructPseudoEvents = constructPseudoEvents;
+           $service.parseRecurrenceRules = parseRecurrenceRules;
 
            function fetchConfig() {
                if (!$service.config && _isAuthenticated) {
@@ -83,7 +86,19 @@ angular.module('hypnoised.calendar')
             * @return {Promise}
             */
            function fetchCalendar(calendarId, apiKey) {
-               return $http.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`);
+               let promise = $http.get(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${apiKey}`);
+               promise.then((response) => {
+                   if (response.data && response.data.items) {
+                       response.data.items.forEach((event) => {
+                           _originalEvents.set(event.id, event);
+                       });
+                   }
+               });
+               return promise;
+           }
+
+           function getOriginalEvents() {
+               return _originalEvents;
            }
 
            /**

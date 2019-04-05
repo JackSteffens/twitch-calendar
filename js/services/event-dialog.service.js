@@ -43,8 +43,6 @@ angular.module('hypnoised.calendar')
             * @param {CalendarEvent} calendarEvent
             */
            function insertIntoBackdrop(event, backdropElement, calendarEvent) {
-               console.log('event : ', event);
-
                let scope = $rootScope.$new();
                scope.event = calendarEvent;
                scope.width = event.currentTarget.clientWidth;
@@ -64,7 +62,11 @@ angular.module('hypnoised.calendar')
                backdropElement.removeClass('hide');
                window.requestAnimationFrame(() => {
                    backdropElement.addClass('active');
-                   dialog.addClass('active');
+
+                   $timeout(() => {
+                       dialog.addClass('active');
+                   }, 10);
+
                    $timeout(() => {
                        dialog.attr('style', '');
                    }, 100);
@@ -106,7 +108,7 @@ angular.module('hypnoised.calendar')
             * @return {JQLite}
             */
            function createBackdrop() {
-               let backdrop = angular.element(`<div id="dialog-backdrop"></div>`);
+               let backdrop = angular.element(`<div class="hide" id="dialog-backdrop"></div>`);
                $rootElement.append(backdrop);
                return backdrop;
            }

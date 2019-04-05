@@ -7,10 +7,36 @@
         <i>{{$ctrl.event.end.dateTime | date:'shortTime'}}</i>
     </div>
 
-    <span>{{$ctrl.event.description}}</span>
+    <div class="info-box calendar">
+        <span class="title">From calendar :</span>
 
-    <div ng-repeat="event in $ctrl.recurrenceEvents track by $index">
-        {{$index}} : {{event.start.dateTime | date:'fullDate'}}
+        <i>{{$ctrl.event.organizer.displayName}}</i>
+    </div>
+
+    <div class="info-box description" ng-show="$ctrl.event.description">
+        <span class="title">Description : </span>
+
+        <i>{{$ctrl.event.description}}</i>
+    </div>
+
+    <div class="info-box recurrence" ng-show="$ctrl.event.recurrence">
+        <span class="title">Repeats </span>
+
+        <i ng-show="$ctrl.recurrenceRuleset.FREQ">{{$ctrl.parseFreq()}}</i>
+        <i>on {{$ctrl.parseByDay()}}</i>
+        <i ng-show="$ctrl.recurrenceRuleset.UNTIL"> until {{$ctrl.recurrenceRuleset.UNTIL | date:'fullDate'}}</i>
+
+        <ul>
+            <li ng-repeat="event in $ctrl.recurrenceEvents track by $index"
+                class="recurrence-event"
+                ng-class="{'expired' : $ctrl.isExpired(event)}">
+                {{event.start.dateTime | date:'fullDate'}}
+            </li>
+        </ul>
+    </div>
+
+    <div class="info-box external">
+        <a target="_blank" href="{{$ctrl.event.htmlLink}}">Open in Google Calendar</a>
     </div>
 
     <div class="footer">
