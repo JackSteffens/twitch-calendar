@@ -18,8 +18,8 @@ angular.module('hypnoised.calendar')
                insertIntoBackdrop(event, backdrop, calendarEvent);
            }
 
-           function closeEvent() {
-               clearBackdrop();
+           function closeEvent(height, width, top, left) {
+               clearBackdrop(height, width, top, left);
            }
 
            /**
@@ -71,16 +71,33 @@ angular.module('hypnoised.calendar')
                });
            }
 
-           function clearBackdrop() {
+           /**
+            * @param {number} height
+            * @param {number} width
+            * @param {number} top
+            * @param {number} left
+            */
+           function clearBackdrop(height, width, top, left) {
                let backdrop = findBackdrop();
                if (backdrop) {
                    let dialog = backdrop.find('event-dialog');
-                   dialog.removeClass('active');
+                   dialog.css('height', height + 'px');
+                   dialog.css('width', width + 'px');
+                   dialog.css('top', top + 'px');
+                   dialog.css('left', left + 'px');
+                   backdrop.addClass('remove');
                    backdrop.removeClass('active');
+                   dialog.addClass('hide');
+
+                   $timeout(() => {
+                       dialog.removeClass('active');
+                   }, 250);
+
                    $timeout(() => {
                        backdrop.addClass('hide');
+                       backdrop.removeClass('remove');
                        backdrop.empty();
-                   }, 200);
+                   }, 400);
                }
            }
 

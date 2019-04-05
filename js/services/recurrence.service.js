@@ -34,7 +34,7 @@ angular.module('hypnoised.calendar')
             *
             * @param event
             * @param {RecurrenceRuleset} ruleset
-            * @return {Promise}
+            * @return {Promise<Array<CalendarEvent>>}
             */
            function constructWeekly(event, ruleset) {
                return $q((resolve) => {

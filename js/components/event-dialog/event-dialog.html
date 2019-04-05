@@ -1,6 +1,21 @@
-<div class="wrapper">
-    <h3>{{$ctrl.event.summary}}</h3>
+<div class="wrapper" ng-class="$ctrl.getEventStatus()">
+    <div class="header">
+        <b>{{$ctrl.event.summary}}</b>
+        <br>
+        <i>{{$ctrl.event.start.dateTime | date:'shortTime'}}</i>
+        -
+        <i>{{$ctrl.event.end.dateTime | date:'shortTime'}}</i>
+    </div>
+
     <span>{{$ctrl.event.description}}</span>
-    <i>{{$ctrl.event.start.dateTime | date:'shortTime'}}</i> - <i>{{$ctrl.event.end.dateTime | date:'shortTime'}}</i>
-    <button ng-click="$ctrl.close()">close</button>
+
+    <div ng-repeat="event in $ctrl.recurrenceEvents track by $index">
+        {{$index}} : {{event.start.dateTime | date:'fullDate'}}
+    </div>
+
+    <div class="footer">
+        <div class="close-button-container" ng-click="$ctrl.close()">
+            <b>Close</b>
+        </div>
+    </div>
 </div>

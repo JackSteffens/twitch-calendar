@@ -1,8 +1,29 @@
+event-dialog {
+    top: 0;
+    left: 0;
+    transition: height .3s ease-in-out, width .1s ease-in-out .1s, top .2s ease-in-out .1s, left .3s ease-out;
+    height: 100%;
+    max-height: 100%;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    display: block;
+}
+
+event-dialog.hide {
+    transition: height .1s ease-in-out .1s, width .3s ease-in-out, top .3s ease-in-out, left .2s ease-out .1s;
+}
+
+event-dialog.hide > div.wrapper {
+    overflow-y: hidden;
+}
+
 event-dialog > div.wrapper {
     width: inherit;
     height: inherit;
-    position: absolute;
-    overflow: hidden;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
     box-sizing: border-box;
     background-color: white;
     border-radius: 5px;
@@ -10,18 +31,35 @@ event-dialog > div.wrapper {
     transition: opacity .1s ease-in;
 }
 
-event-dialog {
-    top: 0;
-    left: 0;
-    transition: height .3s ease-in-out, width .1s ease-in-out, top .3s ease-in-out, left .1s ease-in-out;
-    height: 100%;
-    width: 100%;
-    position: relative;
-    display: block;
-}
 
 event-dialog.active > div.wrapper {
     opacity: 1;
+}
+
+event-dialog > div.wrapper > div.header {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, .5);
+    position: sticky;
+    top: 0;
+    border-radius: 5px;
+    color: white;
+    background-color: #9575CD;
+    padding: .5em 1em;
+}
+
+
+event-dialog > div.wrapper > div.header > i {
+    font-size: small;
+}
+
+event-dialog > div.wrapper.live > div.header {
+    background-color: #F44336;
+    color: white;
+}
+
+event-dialog > div.wrapper.expired > div.header {
+    background-color: #FAFAFA;
+    border: 1px solid #B39DDB;
+    color: #B39DDB;
 }
 
 html.event-dialog-active {
@@ -31,16 +69,62 @@ html.event-dialog-active {
 div#dialog-backdrop {
     position: absolute;
     overflow: hidden;
+    padding: 0;
+    box-sizing: border-box;
     top: 0;
     height: 100%;
     width: 100%;
-    transition: background-color .1s ease-in;
+    transition: background-color .1s ease-in, padding .3s linear .1s;
+}
+
+div#dialog-backdrop.remove {
+    transition: background-color .1s ease-in, padding 0s linear .2s;
 }
 
 div#dialog-backdrop.active {
     background-color: rgba(10, 10, 10, 0.25);
+    padding: 1em;
 }
 
 div#dialog-backdrop.hide {
     display: none;
+}
+
+
+event-dialog > div.wrapper > div.footer {
+    pointer-events: none;
+    position: sticky;
+    top: 100%;
+    bottom: 0;
+    opacity: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    transition: opacity .3s linear .25s;
+}
+
+event-dialog.active > div.wrapper > div.footer {
+    opacity: 1;
+}
+
+event-dialog.hide > div.wrapper > div.footer {
+    opacity: 0;
+    transition: opacity .1s linear 0s;
+}
+
+event-dialog > div.wrapper > div.footer > div.close-button-container {
+    cursor: pointer;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: inherit;
+    justify-content: inherit;
+    width: 50%;
+    padding: .5em;
+    margin-bottom: 1em;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 rgba(244, 67, 45, .25);
+    border: 1px solid #F44336;
+    color: #F44336;
+    font-size: small;
+    background-color: #FFCDD2;
 }

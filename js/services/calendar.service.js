@@ -30,6 +30,7 @@ angular.module('hypnoised.calendar')
            $service.saveBroadcasterConfig = saveBroadcasterConfig;
            $service.fetchCalendar = fetchCalendar;
            $service.constructCalendarAsync = constructCalendarAsync;
+           $service.constructPseudoEvents = constructPseudoEvents;
 
            function fetchConfig() {
                if (!$service.config && _isAuthenticated) {
@@ -158,7 +159,7 @@ angular.module('hypnoised.calendar')
            /**
             *
             * @param {Array<CalendarEvent>}events
-            * @return {Promise<Array>}
+            * @return {Promise<Array<CalendarEvent>>>}
             */
            function constructPseudoEvents(events) {
                let pseudoEvents = [];
@@ -181,8 +182,6 @@ angular.module('hypnoised.calendar')
                          });
                          resolve(pseudoEvents);
                      });
-
-
                });
            }
 
