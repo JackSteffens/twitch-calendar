@@ -15,7 +15,7 @@ angular.module('hypnoised.calendar')
            const DAY_IN_MILLISECONDS = 86400000;
 
            $service.constructWeekly = constructWeekly;
-
+           $service.getNextDate = getNextDate;
 
            function parseUntilRulesetDate(dateString) {
                let year = dateString.slice(0, 4);
@@ -109,7 +109,9 @@ angular.module('hypnoised.calendar')
            }
 
            /**
-            * TODO Write tests for this, as it's brittle
+            * Gets the next possible date based off of the given allowed days, starting from the given date.
+            * If the givenDate is a Sunday, and the following day available in 'allowedDays' is Tuesday, it returns 2
+            * days after the given date as Sunday -> Tuesday = 2 days.
             * @param {Date} givenDate
             * @param {[?'MO', ?'TU', ?'WE', ?'TH', ?'FR', ?'SA', ?'SU']} allowedDays
             * @return {Date}

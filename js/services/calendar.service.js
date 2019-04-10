@@ -11,7 +11,7 @@ angular.module('hypnoised.calendar')
            const EXTENSION_VERSION = '0.0.1';
            const DAY_IN_MILLISECONDS = 86400000;
            const TODAY = new Date();
-           const CONSOLE_STYLING = 'color:red; font-weight:bold;';
+           const CONSOLE_STYLING = 'color:#9575CD; font-weight:bold;';
            let _configPromise = undefined;
            let configRetryCount = 0;
            let _isAuthenticated = false;
@@ -109,7 +109,7 @@ angular.module('hypnoised.calendar')
                     >}
             */
            function constructCalendarAsync(events) {
-               console.log(`%cStarting off with ${events.length} events`, CONSOLE_STYLING);
+               console.debug(`%cStarting off with ${events.length} calendar events`, CONSOLE_STYLING);
                return $q((resolve, reject) => {
                    if (!$service.config) {
                        reject('Config was not loaded yet');
@@ -119,7 +119,7 @@ angular.module('hypnoised.calendar')
                    let knownDates = new Set(); // formatted dates (string)
                    constructPseudoEvents(events)
                        .then((pseudoEvents) => {
-                           console.log(`%cFiltering through ${pseudoEvents.length} PseudoEvents`, CONSOLE_STYLING, pseudoEvents);
+                           console.debug(`%cFiltering through ${pseudoEvents.length} PseudoEvents`, CONSOLE_STYLING, pseudoEvents);
 
                            pseudoEvents.forEach((pEvent, pEventIndex) => {
                                // FIXME This ugly block of code
@@ -145,7 +145,7 @@ angular.module('hypnoised.calendar')
                                        week: getWeek(eventStartDate)
                                    });
                                }
-                               console.log(`Processed (${pEventIndex + 1}/${pseudoEvents.length}) Events`);
+                               console.debug(`Processed (${pEventIndex + 1}/${pseudoEvents.length}) Events`);
                            });
 
                            // sorting
@@ -163,10 +163,10 @@ angular.module('hypnoised.calendar')
                            if (groups.length) {
                                groups[0].startOfNewWeek = true;
                            }
-                           console.log('groups : ', groups);
+                           console.debug('Events grouped by day : ', groups);
                            resolve(groups);
                        }, (reason) => {
-                           console.error('Unable to cosntruct pseudo events', reason);
+                           console.error('Unable to construct pseudo events', reason);
                        });
                });
            }
@@ -191,7 +191,7 @@ angular.module('hypnoised.calendar')
                    $q.all(constructPromises)
                      .then((responses) => {
                          // concat pseudoEvents with responses
-                         console.log(`Finished ${constructPromises.length} promises : `, responses);
+                         console.debug(`%cFinished ${constructPromises.length} promises : `, CONSOLE_STYLING, responses);
                          responses.forEach((events) => {
                              pseudoEvents = pseudoEvents.concat(events);
                          });

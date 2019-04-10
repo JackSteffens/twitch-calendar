@@ -22,5 +22,17 @@
   "bugs": {
     "url": "https://github.com/JackSteffens/twitch-calendar/issues"
   },
-  "homepage": "https://github.com/JackSteffens/twitch-calendar#readme"
+  "homepage": "https://github.com/JackSteffens/twitch-calendar#readme",
+  "devDependencies": {
+    "angular-mocks": "^1.7.8",
+    "jasmine": "^3.4.0",
+    "karma": "^4.0.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^2.0.1"
+  },
+  "dependencies": {
+    "angular": "^1.7.3",
+    "angular-messages": "^1.7.3"
+  }
 }
