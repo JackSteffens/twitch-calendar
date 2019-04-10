@@ -32,7 +32,7 @@ angular.module('hypnoised.calendar')
 
            /**
             *
-            * @param event
+            * @param {CalendarEvent | {start:{dateTime:{string}}, end:{dateTime:{string}}}} event
             * @param {RecurrenceRuleset} ruleset
             * @return {Promise<Array<CalendarEvent>>}
             */
@@ -56,12 +56,15 @@ angular.module('hypnoised.calendar')
 
                        if (ruleset.BY_DAY) {
                            indexDate = getNextDate(indexDate, ruleset.BY_DAY);
-                           // If 'getNextDate' caused the week to pass, add the interval weeks
+                           // If there's also an interval and 'getNextDate' caused the week to pass, add the interval weeks
                            if (ruleset.INTERVAL && DAYS_IN_UTC[ruleset.BY_DAY[0]] === indexDate.getUTCDay()) {
                                indexDate = getNextInterval(indexDate, ruleset.FREQ, ruleset.INTERVAL);
                            }
                        } else if (ruleset.INTERVAL) {
                            indexDate = getNextInterval(indexDate, ruleset.FREQ, ruleset.INTERVAL);
+                       } else { // If it's just weekly with no further rules, take index date's day
+                           let allowedDay = Object.entries(DAYS_IN_UTC).find(([day, number]) => number === indexDate.getUTCDay())[0];
+                           indexDate = getNextDate(indexDate, [allowedDay]);
                        }
 
                        if (ruleset.UNTIL && indexDate.getTime() > untilDate.getTime()) {

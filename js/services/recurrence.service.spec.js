@@ -1,10 +1,12 @@
+'use strict';
 describe('RecurrenceService', function () {
     const DAY_IN_MILLISECONDS = 86400000;
-    let RecurrenceService;
+    let RecurrenceService, $rootScope;
     beforeEach(function () {
         module('hypnoised.calendar');
-        inject(function (_RecurrenceService_) {
+        inject(function (_RecurrenceService_, _$rootScope_) {
             RecurrenceService = _RecurrenceService_;
+            $rootScope = _$rootScope_;
         });
     });
 
@@ -78,5 +80,66 @@ describe('RecurrenceService', function () {
                 expect(nextDate.getTime() - givenDate.getTime()).toBe(DAY_IN_MILLISECONDS);
             });
         });
+    });
+
+    describe('constructWeekly', function () {
+        describe('Today being the 10th of April, 2019', function () {
+            beforeEach(function () {
+                let today = new Date('2019-04-10T12:00:00+02:00');
+                jasmine.clock().mockDate(today); // Wed Apr 10 2019 12:00:00 GMT+0200 (Central European Summer Time)
+                console.log('Mocked today : ', today);
+            });
+
+            describe('given a ruleset weekly on Tuesday until forever starting Tuesday April 2nd', function () {
+                it('should give back 3 events', function (done) {
+                    const startDate = '2019-04-02T20:00:00+02:00';
+                    const endDate = '2019-04-02T22:00:00+02:00';
+                    let calEvent = {
+                        start: {
+                            dateTime: startDate
+                        },
+                        end: {
+                            dateTime: endDate
+                        }
+                    };
+                    const ruleset = {FREQ: 'WEEKLY', BY_DAY: ['TU']};
+                    RecurrenceService.constructWeekly(calEvent, ruleset)
+                                     .then((constructedEvents) => {
+                                         expect(constructedEvents.length).toBe(3);
+                                         expect(new Date(constructedEvents[0].start.dateTime)).toEqual(new Date('2019-04-02T20:00:00+02:00'));
+                                         expect(new Date(constructedEvents[1].start.dateTime)).toEqual(new Date('2019-04-09T20:00:00+02:00'));
+                                         expect(new Date(constructedEvents[2].start.dateTime)).toEqual(new Date('2019-04-16T20:00:00+02:00'));
+                                         done();
+                                     });
+                    $rootScope.$apply();
+                });
+            });
+
+            describe('given a ruleset weekly with week start monday starting Monday, March 31st', function () {
+                it('should give back ', function (done) {
+                    const startDate = '2019-03-31T20:00:00+02:00';
+                    const endDate = '2019-03-31T21:00:00+02:00';
+                    let calEvent = {
+                        start: {
+                            dateTime: startDate
+                        },
+                        end: {
+                            dateTime: endDate
+                        }
+                    };
+                    const ruleset = {FREQ: 'WEEKLY'};
+                    RecurrenceService.constructWeekly(calEvent, ruleset)
+                                     .then((constructedEvents) => {
+                                         expect(constructedEvents.length).toBe(3);
+                                         expect(new Date(constructedEvents[0].start.dateTime)).toEqual(new Date('2019-03-31T20:00:00+02:00'));
+                                         expect(new Date(constructedEvents[1].start.dateTime)).toEqual(new Date('2019-04-07T20:00:00+02:00'));
+                                         expect(new Date(constructedEvents[2].start.dateTime)).toEqual(new Date('2019-04-14T20:00:00+02:00'));
+                                         done();
+                                     });
+                    $rootScope.$apply();
+                });
+            });
+        });
+
     });
 });

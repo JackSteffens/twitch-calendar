@@ -251,6 +251,7 @@ angular.module('hypnoised.calendar')
                let byDayPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
                let byMonthPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
                let untilPattern = new RegExp(/(?:UNTIL=)(.*Z)(\;|$)/m);
+               let weekStartPattern = new RegExp(/(?:WKST=)(MO|TU|WE|TH|FR|SA|SU)(\;|$)/m);
 
                /**
                 * @param {array} groups
@@ -268,8 +269,9 @@ angular.module('hypnoised.calendar')
                    INTERVAL: undefined,
                    BY_DAY: (() => {
                        let string = getValue((ruleString).match(byDayPattern), 1);
-                       return string ? string.split(',') : [];
+                       return string ? string.split(',') : undefined;
                    })(), // BY_DAY is an array with days like ['MO','TU','WE', etc .. ]
+                   WK_ST: getValue((ruleString).match(weekStartPattern), 1),
                    BY_MONTH: undefined, // [number] of month when FREQ = YEARLY
                    BY_MONTH_DAY: undefined // [number] of day in month, when FREQ = MONTHLY
                };
