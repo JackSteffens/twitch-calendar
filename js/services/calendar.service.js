@@ -196,6 +196,8 @@ angular.module('hypnoised.calendar')
                              pseudoEvents = pseudoEvents.concat(events);
                          });
                          resolve(pseudoEvents);
+                     }, (reason) => {
+                         console.error(reason);
                      });
                });
            }
@@ -214,18 +216,15 @@ angular.module('hypnoised.calendar')
                        let ruleset = parseRecurrenceRules(modifiedEvent.recurrence[0]);
                        if (ruleset) {
                            console.debug('Build a ruleset ', ruleset);
-                           if (ruleset.FREQ === 'DAILY') {
-                               // daily rules
-                           } else if (ruleset.FREQ === 'WEEKLY') {
+                           if (ruleset.FREQ === 'WEEKLY') {
                                RecurrenceService.constructWeekly(modifiedEvent, ruleset)
                                                 .then((constructedEvents) => {
                                                     console.debug('constructed event : ', constructedEvents);
                                                     resolve(constructedEvents);
                                                 });
-                           } else if (ruleset.FREQ === 'MONTHLY') {
-                               // monthly rules
-                           } else if (ruleset.FREQ === 'YEARLY') {
-                               // yearly rules
+                           } else {
+                               console.error(`No support for ${ruleset.FREQ} events yet. Event ignored : `, originalEvent);
+                               resolve([]);
                            }
                        }
                    } catch (e) {

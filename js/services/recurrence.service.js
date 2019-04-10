@@ -38,6 +38,12 @@ angular.module('hypnoised.calendar')
             */
            function constructWeekly(event, ruleset) {
                return $q((resolve) => {
+                   if (!event.start.dateTime && event.start.date) {
+                       event.start.dateTime = new Date(event.start.date);
+                   }
+                   if (!event.end.dateTime && event.end.date) {
+                       event.end.dateTime = new Date(event.end.date);
+                   }
                    const eventStartDate = new Date(event.start.dateTime);
                    const eventEndDate = new Date(event.end.dateTime);
                    const deltaTimestamp = eventEndDate.getTime() - eventStartDate.getTime();
