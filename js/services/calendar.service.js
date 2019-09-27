@@ -33,7 +33,6 @@ angular.module('hypnoised.calendar')
            $service.fetchCalendar = fetchCalendar;
            $service.constructCalendarAsync = constructCalendarAsync;
            $service.constructPseudoEvents = constructPseudoEvents;
-           $service.parseRecurrenceRules = parseRecurrenceRules;
 
            function fetchConfig() {
                if (!$service.config && _isAuthenticated) {
@@ -174,7 +173,7 @@ angular.module('hypnoised.calendar')
            /**
             *
             * @param {Array<CalendarEvent>}events
-            * @return {Promise<Array<CalendarEvent>>>}
+            * @return {Promise<Array<CalendarEvent>>}
             */
            function constructPseudoEvents(events) {
                let pseudoEvents = [];
@@ -206,6 +205,7 @@ angular.module('hypnoised.calendar')
             * CREATE A NEW EVENT BASED ON THE RECURRENCE RULES UP UNTIL YOU REACH
             * AN EVENT WITH START TIME GREATER OR EQUAL TO TODAY, RETURN THAT EVENT. DON'T GO FURTHER
             * AS SOME EVENTS MAY GO UP UNTIL INFINITE
+            * TODO Move to RecurrenceService
             * @param {{recurrence:Array, start:{dateTime:string}, end:{dateTime:string}}} originalEvent
             * @return {Promise<Array<CalendarEvent>>}
             */
@@ -213,7 +213,7 @@ angular.module('hypnoised.calendar')
                let modifiedEvent = angular.copy(originalEvent);
                return $q((resolve, reject) => {
                    try {
-                       let ruleset = parseRecurrenceRules(modifiedEvent.recurrence[0]);
+                       let ruleset = RecurrenceService.parseRecurrenceRules(modifiedEvent.recurrence[0]);
                        if (ruleset) {
                            console.debug('Build a ruleset ', ruleset);
                            if (ruleset.FREQ === 'WEEKLY') {
@@ -234,46 +234,6 @@ angular.module('hypnoised.calendar')
                        reject(originalEvent);
                    }
                });
-           }
-
-           /**
-            * Write tests based on these scenarios
-            * https://tools.ietf.org/html/rfc5545#section-3.8.5
-            * @param ruleString
-            * @return {{INTERVAL: undefined, BY_MONTH_DAY: undefined, BY_DAY: *, FREQ: *, COUNT: *, UNTIL: undefined, BY_MONTH: undefined}}
-            */
-           function parseRecurrenceRules(ruleString) {
-               let startsWithRRULE = new RegExp(/(^RRULE:)(.*)/);
-               let freqPattern = new RegExp(/(FREQ=)(WEEKLY|DAILY|MONTHLY|YEARLY)(\;|$)/m);
-               let countPattern = new RegExp(/(COUNT=)(\d+)(\;|$)/m);
-               // FIXME "-1<DAY>" should be implemented too, note the minus (-)
-               let byDayPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
-               let byMonthPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
-               let untilPattern = new RegExp(/(?:UNTIL=)(.*Z)(\;|$)/m);
-               let weekStartPattern = new RegExp(/(?:WKST=)(MO|TU|WE|TH|FR|SA|SU)(\;|$)/m);
-
-               /**
-                * @param {array} groups
-                * @param {number} groupNumber
-                * @return {undefined}
-                */
-               function getValue(groups, groupNumber) {
-                   return groups ? groups[groupNumber] : undefined;
-               }
-
-               return {
-                   FREQ: getValue((ruleString).match(freqPattern), 2),
-                   COUNT: getValue((ruleString).match(countPattern), 2),
-                   UNTIL: getValue((ruleString).match(untilPattern), 1),
-                   INTERVAL: undefined,
-                   BY_DAY: (() => {
-                       let string = getValue((ruleString).match(byDayPattern), 1);
-                       return string ? string.split(',') : undefined;
-                   })(), // BY_DAY is an array with days like ['MO','TU','WE', etc .. ]
-                   WK_ST: getValue((ruleString).match(weekStartPattern), 1),
-                   BY_MONTH: undefined, // [number] of month when FREQ = YEARLY
-                   BY_MONTH_DAY: undefined // [number] of day in month, when FREQ = MONTHLY
-               };
            }
 
            /**

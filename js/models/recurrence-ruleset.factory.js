@@ -2,14 +2,14 @@
 angular.module('hypnoised.calendar')
        .factory('RecurrenceRuleset', function () {
            /**
-            * @param {string} TZ_ID , 'America/New_York:19970902T090000'
-            * @param {'DAILY', 'MONTHLY', 'YEARLY'} FREQ
-            * @param {[?'MO', ?'TU', ?'WE', ?'TH', ?'FR', ?'SA', ?'SU']} BY_DAY
-            * @param {string|Date} UNTIL
-            * @param {number} INTERVAL
-            * @param {'MO'|'TU'|'WE'|'TH'|'FR'|'SA'|'SU'|null} WK_ST
-            * @param {number} BY_MONTH 0-11
-            * @param {number} COUNT
+            * @param {string |undefined} TZ_ID , 'America/New_York:19970902T090000'
+            * @param {'DAILY', 'MONTHLY', 'YEARLY' | undefined} FREQ
+            * @param {[?'MO', ?'TU', ?'WE', ?'TH', ?'FR', ?'SA', ?'SU'] | undefined} BY_DAY
+            * @param {Date | undefined} UNTIL
+            * @param {number | undefined} INTERVAL
+            * @param {'MO'|'TU'|'WE'|'TH'|'FR'|'SA'|'SU'| undefined} WK_ST
+            * @param {number | undefined} BY_MONTH 0-11
+            * @param {number | undefined} COUNT
             * @constructor
             */
            function RecurrenceRuleset(TZ_ID, FREQ, BY_DAY, UNTIL, INTERVAL, WK_ST, BY_MONTH, COUNT) {

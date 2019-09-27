@@ -1,6 +1,6 @@
 'use strict';
 angular.module('hypnoised.calendar')
-       .controller('EventDialogCtrl', function ($scope, EventDialogService, CalendarService) {
+       .controller('EventDialogCtrl', function ($scope, EventDialogService, CalendarService, RecurrenceService) {
            const $ctrl = this;
            let _originalEvent = undefined;
            $ctrl.close = close;
@@ -9,7 +9,6 @@ angular.module('hypnoised.calendar')
            $ctrl.parseByDay = parseByDay;
            $ctrl.parseFreq = parseFreq;
            $ctrl.event = undefined;
-           $ctrl.test = Array(100);
            $ctrl.recurrenceEvents = [];
            $ctrl.recurrenceRuleset = undefined;
 
@@ -103,7 +102,7 @@ angular.module('hypnoised.calendar')
            }
 
            function getRecurrenceRuleset() {
-               $ctrl.recurrenceRuleset = CalendarService.parseRecurrenceRules($ctrl.event.recurrence[0]);
+               $ctrl.recurrenceRuleset = RecurrenceService.parseRecurrenceRules($ctrl.event.recurrence[0]);
            }
 
            $ctrl.$onChanges = function (changes) {

@@ -16,7 +16,13 @@ angular.module('hypnoised.calendar')
 
            $service.constructWeekly = constructWeekly;
            $service.getNextDate = getNextDate;
+           $service.parseRecurrenceRules = parseRecurrenceRules;
 
+           /**
+            *
+            * @param dateString
+            * @return {Date}
+            */
            function parseUntilRulesetDate(dateString) {
                let year = dateString.slice(0, 4);
                let month = dateString.slice(4, 6);
@@ -89,6 +95,18 @@ angular.module('hypnoised.calendar')
            }
 
            /**
+            *
+            * @param {CalendarEvent} event
+            * @param {RecurrenceRuleset} ruleset
+            * @return {Promise<Array<CalendarEvent>>}
+            */
+           function constructDaily(event, ruleset) {
+               return $q((resolve, reject) => {
+                   
+               });
+           }
+
+           /**
             * @param {Date} date
             * @param {'DAILY', 'WEEKLY', 'MONTHLY'}frequency
             * @param {number} interval
@@ -131,5 +149,47 @@ angular.module('hypnoised.calendar')
                let delta = (chosenNextDay - currentDay); // +1 since days are 0 indexed
                let neededDays = delta <= 0 ? (TOTAL_DAYS_IN_WEEK + delta) : delta;
                return new Date(givenDate.getTime() + (neededDays * DAY_IN_MILLISECONDS));
+           }
+
+           /**
+            * Write tests based on these scenarios
+            * https://tools.ietf.org/html/rfc5545#section-3.8.5
+            * TODO Move to RecurrenceService
+            * @param ruleString
+            * @return {RecurrenceRuleset}
+            */
+           function parseRecurrenceRules(ruleString) {
+               let startsWithRRULE = new RegExp(/(^RRULE:)(.*)/);
+               let freqPattern = new RegExp(/(FREQ=)(WEEKLY|DAILY|MONTHLY|YEARLY)(\;|$)/m);
+               let countPattern = new RegExp(/(COUNT=)(\d+)(\;|$)/m);
+               // FIXME "-1<DAY>" should be implemented too, note the minus (-)
+               let byDayPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
+               let byMonthPattern = new RegExp(/(?:BYDAY=)((\d?(MO|TU|WE|TH|FR|SA|SU),?)*)(\;|$)/m);
+               let untilPattern = new RegExp(/(?:UNTIL=)(.*Z)(\;|$)/m);
+               let weekStartPattern = new RegExp(/(?:WKST=)(MO|TU|WE|TH|FR|SA|SU)(\;|$)/m);
+
+               /**
+                * @param {array} groups
+                * @param {number} groupNumber
+                * @return {undefined}
+                */
+               function getValue(groups, groupNumber) {
+                   return groups ? groups[groupNumber] : undefined;
+               }
+
+               // TODO Use new RecurrenceRuleset()
+               return {
+                   FREQ: getValue((ruleString).match(freqPattern), 2),
+                   COUNT: getValue((ruleString).match(countPattern), 2),
+                   UNTIL: getValue((ruleString).match(untilPattern), 1),
+                   INTERVAL: undefined,
+                   BY_DAY: (() => {
+                       let string = getValue((ruleString).match(byDayPattern), 1);
+                       return string ? string.split(',') : undefined;
+                   })(), // BY_DAY is an array with days like ['MO','TU','WE', etc .. ]
+                   WK_ST: getValue((ruleString).match(weekStartPattern), 1),
+                   BY_MONTH: undefined, // [number] of month when FREQ = YEARLY
+                   BY_MONTH_DAY: undefined // [number] of day in month, when FREQ = MONTHLY
+               };
            }
        });
